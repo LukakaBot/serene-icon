@@ -16,9 +16,6 @@ const fetcher = createInstance({
     'Accept': 'application/json, text/plain, */*',
     'Authorization': 'Bearer ',
     'Content-Type': 'application/json',
-  },
-  next: {
-    revalidate: 0,
   }
 });
 

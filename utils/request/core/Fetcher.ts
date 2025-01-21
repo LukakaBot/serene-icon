@@ -1,25 +1,24 @@
-import type { CreateFetcherDefaults, Method } from '../types';
-import { requestInterceptors, responseInterceptors } from './InterceptorManager';
+import type { FetcherRequestConfig, Method } from '../types';
+import InterceptorManager from './InterceptorManager';
 
 class Fetcher {
-  instanceConfig: CreateFetcherDefaults;
-  create = (instanceConfig: CreateFetcherDefaults) => new Fetcher(instanceConfig);
-  requestInterceptors = requestInterceptors;
-  responseInterceptors = responseInterceptors;
+  private instanceConfig: FetcherRequestConfig;
+  private interceptor = new InterceptorManager();
+  create = (instanceConfig: FetcherRequestConfig) => new Fetcher(instanceConfig);
 
-  constructor(instanceConfig: CreateFetcherDefaults) {
+  constructor(instanceConfig: FetcherRequestConfig) {
     this.instanceConfig = instanceConfig;
   }
 
   async request<T = any>(url: string, method: Method, data?: T) {
-    const request = this.requestInterceptors({
+    const request = this.interceptor.request({
       url,
       method,
-      data,
+      data
     });
 
     const response = await fetch(url, request.options);
-    return this.responseInterceptors(response);
+    return this.interceptor.response(response);
   }
 
   get = <T = any>(url: string, data?: T) => this.request(url, 'GET', data);

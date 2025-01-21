@@ -7,12 +7,12 @@ export type Method =
   | 'put' | 'PUT'
   | 'patch' | 'PATCH';
 
-export interface FetcherRequestConfig<D = any> {
+export interface FetcherRequestConfig<T = any> {
   url?: string;
   method?: Method;
   baseURL?: string;
   headers?: Headers;
-  data?: D;
+  data?: T;
   cacheTIme?: number;
   next?: {
     revalidate: number;
@@ -24,16 +24,6 @@ export interface CreateFetcherDefaults<D = any> extends Omit<FetcherRequestConfi
   headers?: Headers;
 }
 
-export class Fetcher {
-  constructor(config: FetcherRequestConfig);
-
-  request<T = any, R = Response<T>, D = any>(config: FetcherRequestConfig<D>): Promise<R>;
-  get<T = any, R = Response<T>, D = any>(url: string, config?: FetcherRequestConfig<D>): Promise<R>;
-  post<T = any, R = Response<T>, D = any>(url: string, data?: D, config?: FetcherRequestConfig<D>): Promise<R>;
-  put<T = any, R = Response<T>, D = any>(url: string, data?: D, config?: FetcherRequestConfig<D>): Promise<R>;
-  delete<T = any, R = Response<T>, D = any>(url: string, config?: FetcherRequestConfig<D>): Promise<R>;
-}
-
 export interface FetcherInstance extends Fetcher {
   create: (instanceConfig: FetcherRequestConfig) => Fetcher;
 }
@@ -43,4 +33,21 @@ export interface FetcherRequestInit {
   options: RequestInit;
 }
 
-export type Headers = RequestInit['headers'];
+
+type CommonRequestHeadersList = 'Accept' | 'Content-Length' | 'User-Agent' | 'Content-Encoding' | 'Authorization';
+
+export type FetcherHeaderValue = string | string[] | number | boolean | null;
+
+type ContentType = FetcherHeaderValue | 'text/html' | 'text/plain' | 'multipart/form-data' | 'application/json' | 'application/x-www-form-urlencoded' | 'application/octet-stream';
+
+interface RawFetcherHeaders {
+  [key: string]: FetcherHeaderValue;
+}
+
+export type FetcherRequestHeaders = Partial<RawFetcherHeaders & {
+  [Key in CommonRequestHeadersList]: FetcherHeaderValue;
+} & {
+  'Content-Type': ContentType
+}>;
+
+export type Headers = RequestInit['headers'] & FetcherRequestHeaders;

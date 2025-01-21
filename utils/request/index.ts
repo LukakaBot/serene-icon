@@ -6,7 +6,5 @@ const request = fetcher.create({
     revalidate: 0,
   }
 });
-console.log(fetcher);
-console.log(request);
 
 export default request;
