@@ -8,6 +8,7 @@ export default async function Home() {
 	// 	'http://36.133.91.245:6084/x/edp/customerDemandController/selectDemand'
 	// );
 	console.log(res);
+	console.log(process.env)
 
 	return (
 		<>
